@@ -1,15 +1,15 @@
-add_layer {P P.x P.y P.z P.red P.green P.blue P.alpha P.X P.Y P.Z P.z}
-add_layer {depth_extra depth_extra.z}
+add_layer {P P.X P.Y P.Z P.x P.green P.blue P.alpha P.X P.red P.y P.z}
 Group {
  name emDepthFog1
- inputs 2
- knobChanged "import nuke\n\nn = nuke.thisNode()\nk = nuke.thisKnob()\n\n### INPUT CREATION\n## UTILS Input\ncheckutils = nuke.toNode('InputUTILS')\n\nif n.knob('input_utils').value() ==False:\n    if checkutils:\n        nuke.delete(checkutils)  # Delete 'Inpututils' if it exists     \nelse:\n    if not checkutils: \n        matteInput = nuke.createNode('Input', \"name InputUTILS\", inpanel=False) # Create Input node \n        enableutils = nuke.toNode('Switch3')\n        \n        if matteInput:\n            enableutils.setInput(1, matteInput)\n                                    \n            # Adjust 'Inpututils' position relative to 'enable_utils'\n            matteInput.setYpos(enableutils.ypos() - 50)  # Adjusting Y-position, not X-position\n            matteInput.setXpos(enableutils.xpos())       # Aligning X-position\n\n###KNOB CHANGED\n#Enable Labels\nif k.name() == 'enable_glow':\n    if n.knob('enable_glow').getValue() == 0:\n        n.knob('enable_glow_text').setLabel('<font color=\"\">Enable</font>')\n        n.knobs()\['sample'].setVisible(False)\n        n.knobs()\['intensity'].setVisible(False)\n        n.knobs()\['value'].setVisible(False)\n        n.knobs()\['size'].setVisible(False)\n    else:\n        n.knob('enable_glow_text').setLabel('<font color=\"green\">Enable</font>')\n        n.knobs()\['sample'].setVisible(True)\n        n.knobs()\['intensity'].setVisible(True)\n        n.knobs()\['value'].setVisible(True)\n        n.knobs()\['size'].setVisible(True)\n        \nif k.name() == 'enableSkyRamp':\n    if n.knob('enableSkyRamp').getValue() == 0:\n        n.knob('enableSkyRamp_text').setLabel('<font color=\"\">Enable</font>')\n        n.knob('end_color_q').setVisible(False)\n        n.knob('start').setVisible(False)\n        n.knob('start_ramp').setVisible(False)\n        n.knob('end').setVisible(False)\n        n.knob('end_ramp').setVisible(False)\n        n.knob('opacity_1').setVisible(False)\n        n.knob('color_start').setVisible(False)\n        n.knob('color_end').setVisible(False)\n        n.knob('generate_id_skyRamp').setVisible(False)\n    else:\n        n.knob('enableSkyRamp_text').setLabel('<font color=\"green\">Enable</font>')\n        n.knob('end_color_q').setVisible(True)\n        n.knob('start').setVisible(True)\n        n.knob('start_ramp').setVisible(True)\n        n.knob('end').setVisible(True)\n        n.knob('end_ramp').setVisible(True)\n        n.knob('opacity_1').setVisible(True)\n        n.knob('color_start').setVisible(True)\n        n.knob('color_end').setVisible(True)\n        n.knob('generate_id_skyRamp').setVisible(True)\n\n##mode\nif n\['mode'].value() == 'P_World':\n    n\['z_near'].setVisible(False)\n    n\['z_far'].setVisible(False)\n    n\['units'].setVisible(True)\n    n\['near_3d'].setVisible(True)\n    n\['far_3d'].setVisible(True)\nelse:\n    n\['z_near'].setVisible(True)\n    n\['z_far'].setVisible(True)\n    n\['units'].setVisible(False)\n    n\['near_3d'].setVisible(False)\n    n\['far_3d'].setVisible(False)\n\n### PICKER\n##Depth\nzdepth = nuke.toNode(f\"Shuffle1\")\n# Near Values\nif k.name() == 'near':\n    posFar = n\['near'].value()  # The position picked\n    \n    # Check if proxy mode is active\n    if n\['mode'].value() == 'ZDepth':             \n        # Sample RGB values from the node\n        r = zdepth.sample('red',  posFar\[0], posFar\[1],)\n                \n        # Set the z_near knob with the sampled values\n        n\['z_near'].setValue(\[r])\n            \n# Far Values\nif k.name() == 'far':\n    posFar = n\['far'].value()  # The position picked\n    \n    if n\['mode'].value() == 'ZDepth':             \n        # Sample RGB values from the node\n        r = zdepth.sample('red',  posFar\[0], posFar\[1],)\n            \n        # Set the z_far knob with the sampled values\n        n\['z_far'].setValue(\[r])\n\n\n##P_World\npworld = nuke.toNode(f\"Shuffle2\")\n# Near Values\nif k.name() == 'near':\n    posFar = n\['near'].value()  # The position picked\n    animated = nuke.thisKnob().isAnimated()\n    \n    # Check if proxy mode is active\n    if nuke.root().knob('proxy').value():\n        nuke.message('You have to disable proxy mode to use this feature.')\n    else:\n        # Handle 'P_World' mode\n        if n\['mode'].value() == 'P_World':             \n            # Sample RGB values from the node\n            r = pworld.sample('red',  posFar\[0], posFar\[1],)\n            g = pworld.sample('green', posFar\[0], posFar\[1])\n            b = pworld.sample('blue',  posFar\[0], posFar\[1])\n            \n            n = nuke.thisNode()\n            if animated:\n                if not n.knob('near_3d').isAnimated():\n                    n.knob('near_3d').setAnimated()\n            else:\n                n.knob('near_3d').clearAnimated()\n                \n            # Set the near_3d knob with the sampled values\n            n\['near_3d'].setValue(\[r, g, b])\n            \n# Far Values\nif k.name() == 'far':\n    pworld = nuke.toNode(f\"Shuffle2\")\n    posFar = n\['far'].value()  # The position picked\n    animated = nuke.thisKnob().isAnimated()\n    \n    # Check if proxy mode is active\n    if nuke.root().knob('proxy').value():\n        nuke.message('You have to disable proxy mode to use this feature.')\n    else:\n        # Handle 'Static' mode\n        if n\['mode'].value() == 'P_World':             \n            # Sample RGB values from the node\n            r = pworld.sample('red',  posFar\[0], posFar\[1],)\n            g = pworld.sample('green', posFar\[0], posFar\[1])\n            b = pworld.sample('blue',  posFar\[0], posFar\[1])\n            \n            if animated:\n                if not n.knob('far_3d').isAnimated():\n                    n.knob('far_3d').setAnimated()\n            else:\n                n.knob('far_3d').clearAnimated()\n                \n            # Set the far_3d knob with the sampled values\n            n\['far_3d'].setValue(\[r, g, b])\n            \n            \n##Sky Map\npworld = nuke.toNode(f\"Shuffle2\")\n# Start Values\nif k.name() == 'start':\n    posStart = n\['start'].value()  # The position picked\n    animated = nuke.thisKnob().isAnimated()\n    \n    # Check if proxy mode is active\n    if nuke.root().knob('proxy').value():\n        nuke.message('You have to disable proxy mode to use this feature.')\n    else:\n        # Handle 'P_World' mode\n        if n\['start']:             \n            # Sample RGB values from the node\n            r = pworld.sample('red',  posStart\[0], posStart\[1],)\n            g = pworld.sample('green', posStart\[0], posStart\[1])\n            b = pworld.sample('blue',  posStart\[0], posStart\[1])\n            \n            n = nuke.thisNode()\n            if animated:\n                if not n.knob('start_3d').isAnimated():\n                    n.knob('start_3d').setAnimated()\n            else:\n                n.knob('start_3d').clearAnimated()\n                \n            # Set the near_3d knob with the sampled values\n            n\['start_ramp'].setValue(\[g])\n            \n# Far Values\nif k.name() == 'end':\n    pworld = nuke.toNode(f\"Shuffle2\")\n    posEnd = n\['end'].value()  # The position picked\n    animated = nuke.thisKnob().isAnimated()\n    \n    # Check if proxy mode is active\n    if nuke.root().knob('proxy').value():\n        nuke.message('You have to disable proxy mode to use this feature.')\n    else:\n        # Handle 'Static' mode\n        if n\['end']:             \n            # Sample RGB values from the node\n            r = pworld.sample('red',  posEnd\[0], posEnd\[1],)\n            g = pworld.sample('green', posEnd\[0], posEnd\[1])\n            b = pworld.sample('blue',  posEnd\[0], posEnd\[1])\n            \n            if animated:\n                if not n.knob('end_3d').isAnimated():\n                    n.knob('end_3d').setAnimated()\n            else:\n                n.knob('end_3d').clearAnimated()\n                \n            # Set the far_3d knob with the sampled values\n            n\['end_ramp'].setValue(\[g])"
+ inputs 3
+ knobChanged "import nuke\n\nn = nuke.thisNode()\nk = nuke.thisKnob()\n\n### INPUT CREATION\n## UTILS Input\ncheckutils = nuke.toNode('InputUTILS')\n\nif n.knob('input_utils').value() ==False:\n    if checkutils:\n        nuke.delete(checkutils)  # Delete 'Inpututils' if it exists     \nelse:\n    if not checkutils: \n        matteInput = nuke.createNode('Input', \"name InputUTILS\", inpanel=False) # Create Input node \n        enableutils = nuke.toNode('Switch3')\n        \n        if matteInput:\n            enableutils.setInput(1, matteInput)\n                                    \n            # Adjust 'Inpututils' position relative to 'enable_utils'\n            matteInput.setYpos(enableutils.ypos() - 50)  # Adjusting Y-position, not X-position\n            matteInput.setXpos(enableutils.xpos())       # Aligning X-position\n\n###KNOB CHANGED\n#Enable Labels\nif k.name() == 'enable_glow':\n    if n.knob('enable_glow').getValue() == 0:\n        n.knob('enable_glow_text').setLabel('<font color=\"\">Enable</font>')\n        n.knobs()\['sample'].setVisible(False)\n        n.knobs()\['intensity'].setVisible(False)\n        n.knobs()\['value'].setVisible(False)\n        n.knobs()\['size'].setVisible(False)\n    else:\n        n.knob('enable_glow_text').setLabel('<font color=\"green\">Enable</font>')\n        n.knobs()\['sample'].setVisible(True)\n        n.knobs()\['intensity'].setVisible(True)\n        n.knobs()\['value'].setVisible(True)\n        n.knobs()\['size'].setVisible(True)\n        \nif k.name() == 'enableSkyRamp':\n    if n.knob('enableSkyRamp').getValue() == 0:\n        n.knob('enableSkyRamp_text').setLabel('<font color=\"\">Enable</font>')\n        n.knob('end_color_q').setVisible(False)\n        n.knob('start').setVisible(False)\n        n.knob('start_ramp').setVisible(False)\n        n.knob('end').setVisible(False)\n        n.knob('end_ramp').setVisible(False)\n        n.knob('opacity_1').setVisible(False)\n        n.knob('hardness_ramp').setVisible(False)\n        n.knob('color_start').setVisible(False)\n        n.knob('color_end').setVisible(False)\n        n.knob('generate_id_skyRamp').setVisible(False)\n    else:\n        n.knob('enableSkyRamp_text').setLabel('<font color=\"green\">Enable</font>')\n        n.knob('end_color_q').setVisible(True)\n        n.knob('start').setVisible(True)\n        n.knob('start_ramp').setVisible(True)\n        n.knob('end').setVisible(True)\n        n.knob('end_ramp').setVisible(True)\n        n.knob('opacity_1').setVisible(True)\n        n.knob('hardness_ramp').setVisible(True)\n        n.knob('color_start').setVisible(True)\n        n.knob('color_end').setVisible(True)\n        n.knob('generate_id_skyRamp').setVisible(True)\n\n##mode\nif n\['mode'].value() == 'P_World':\n    n\['z_near'].setVisible(False)\n    n\['z_far'].setVisible(False)\n    n\['near_3d'].setVisible(True)\n    n\['far_3d'].setVisible(True)\n    n\['mirror_p'].setVisible(True)\n    n\['invert_p'].setVisible(True)\nelse:\n    n\['z_near'].setVisible(True)\n    n\['z_far'].setVisible(True)\n    n\['near_3d'].setVisible(False)\n    n\['far_3d'].setVisible(False)\n    n\['mirror_p'].setVisible(False)\n    n\['invert_p'].setVisible(True)\n\n### PICKER\n##Depth\nzdepth = nuke.toNode(f\"Shuffle1\")\n# Near Values\nif k.name() == 'near':\n    posFar = n\['near'].value()  # The position picked\n    \n    # Check if proxy mode is active\n    if n\['mode'].value() == 'ZDepth':             \n        # Sample RGB values from the node\n        r = zdepth.sample('red',  posFar\[0], posFar\[1],)\n                \n        # Set the z_near knob with the sampled values\n        n\['z_near'].setValue(\[r])\n            \n# Far Values\nif k.name() == 'far':\n    posFar = n\['far'].value()  # The position picked\n    \n    if n\['mode'].value() == 'ZDepth':             \n        # Sample RGB values from the node\n        r = zdepth.sample('red',  posFar\[0], posFar\[1],)\n            \n        # Set the z_far knob with the sampled values\n        n\['z_far'].setValue(\[r])\n\n\n##P_World\npworld = nuke.toNode(f\"Shuffle2\")\n# Near Values\nif k.name() == 'near':\n    posFar = n\['near'].value()  # The position picked\n    animated = nuke.thisKnob().isAnimated()\n    \n    # Check if proxy mode is active\n    if nuke.root().knob('proxy').value():\n        nuke.message('You have to disable proxy mode to use this feature.')\n    else:\n        # Handle 'P_World' mode\n        if n\['mode'].value() == 'P_World':             \n            # Sample RGB values from the node\n            r = pworld.sample('red',  posFar\[0], posFar\[1],)\n            g = pworld.sample('green', posFar\[0], posFar\[1])\n            b = pworld.sample('blue',  posFar\[0], posFar\[1])\n            \n            n = nuke.thisNode()\n            if animated:\n                if not n.knob('near_3d').isAnimated():\n                    n.knob('near_3d').setAnimated()\n            else:\n                n.knob('near_3d').clearAnimated()\n                \n            # Set the near_3d knob with the sampled values\n            n\['near_3d'].setValue(\[r, g, b])\n            \n# Far Values\nif k.name() == 'far':\n    pworld = nuke.toNode(f\"Shuffle2\")\n    posFar = n\['far'].value()  # The position picked\n    animated = nuke.thisKnob().isAnimated()\n    \n    # Check if proxy mode is active\n    if nuke.root().knob('proxy').value():\n        nuke.message('You have to disable proxy mode to use this feature.')\n    else:\n        # Handle 'Static' mode\n        if n\['mode'].value() == 'P_World':             \n            # Sample RGB values from the node\n            r = pworld.sample('red',  posFar\[0], posFar\[1],)\n            g = pworld.sample('green', posFar\[0], posFar\[1])\n            b = pworld.sample('blue',  posFar\[0], posFar\[1])\n            \n            if animated:\n                if not n.knob('far_3d').isAnimated():\n                    n.knob('far_3d').setAnimated()\n            else:\n                n.knob('far_3d').clearAnimated()\n                \n            # Set the far_3d knob with the sampled values\n            n\['far_3d'].setValue(\[r, g, b])\n            \n            \n##Sky Map\npworld = nuke.toNode(f\"Shuffle2\")\n# Start Values\nif k.name() == 'start':\n    posStart = n\['start'].value()  # The position picked\n    animated = nuke.thisKnob().isAnimated()\n    \n    # Check if proxy mode is active\n    if nuke.root().knob('proxy').value():\n        nuke.message('You have to disable proxy mode to use this feature.')\n    else:\n        # Handle 'P_World' mode\n        if n\['start']:             \n            # Sample RGB values from the node\n            r = pworld.sample('red',  posStart\[0], posStart\[1],)\n            g = pworld.sample('green', posStart\[0], posStart\[1])\n            b = pworld.sample('blue',  posStart\[0], posStart\[1])\n            \n            n = nuke.thisNode()\n            if animated:\n                if not n.knob('start_3d').isAnimated():\n                    n.knob('start_3d').setAnimated()\n            else:\n                n.knob('start_3d').clearAnimated()\n                \n            # Set the near_3d knob with the sampled values\n            n\['start_ramp'].setValue(\[g])\n            \n# Far Values\nif k.name() == 'end':\n    pworld = nuke.toNode(f\"Shuffle2\")\n    posEnd = n\['end'].value()  # The position picked\n    animated = nuke.thisKnob().isAnimated()\n    \n    # Check if proxy mode is active\n    if nuke.root().knob('proxy').value():\n        nuke.message('You have to disable proxy mode to use this feature.')\n    else:\n        # Handle 'Static' mode\n        if n\['end']:             \n            # Sample RGB values from the node\n            r = pworld.sample('red',  posEnd\[0], posEnd\[1],)\n            g = pworld.sample('green', posEnd\[0], posEnd\[1])\n            b = pworld.sample('blue',  posEnd\[0], posEnd\[1])\n            \n            if animated:\n                if not n.knob('end_3d').isAnimated():\n                    n.knob('end_3d').setAnimated()\n            else:\n                n.knob('end_3d').clearAnimated()\n                \n            # Set the far_3d knob with the sampled values\n            n\['end_ramp'].setValue(\[g])"
  tile_color 0x5289c4ff
  label "\[value mode]"
  addUserKnob {20 User l emDepthFog t "Make a fake Fog using P_World or ZDepth AOVs."}
  addUserKnob {4 preview l "view mode" t "Different previews are designed to check the Final Image, the fog, and the fog with color and glow stuff." M {"Final Image" Fog "Fog with Color" Sky "Sky with Color" Glow "" "" "" "" "" ""}}
  addUserKnob {26 ""}
  addUserKnob {6 input_utils l "Input UTILS" t "Creates an input UTILS if you have the Data AOV in a different brunch." +STARTLINE}
+ input_utils true
  addUserKnob {6 unpremultiply l "Unpremultiply UTILS" t "Unpremultiply the UTILS/Data AOVS." -STARTLINE}
  unpremultiply true
  addUserKnob {41 in l P_World t "Set up P AOV here. " T Shuffle2.in}
@@ -18,25 +18,29 @@ Group {
  addUserKnob {26 ""}
  addUserKnob {26 text_fog l "@b;Depth Fog" T " "}
  addUserKnob {4 mode l "" t "Fog Mode. P_World works with P (position) AOV and ZDepth with depth.Z AOV. P_World mode keeps the fog at the same position and ZDepth follows the camera movement. " -STARTLINE M {P_World ZDepth "" "" "" ""}}
- addUserKnob {6 near_color_q l "Near Color?" t "Adds an additional color in your depth fog close to the near values. " -STARTLINE}
+ addUserKnob {6 near_color_q l "Enable Near Color" t "Adds an additional color in your depth fog close to the near values. " -STARTLINE}
+ near_color_q true
  addUserKnob {12 near l "near pick" t "Picker of near point."}
- near {1215 683}
+ near {1072 176}
  addUserKnob {13 near_3d l "" t "Adjust the near position in 3D" -STARTLINE}
- near_3d {-3474.295654 598.9240112 -2490.16626}
+ near_3d {1205.594482 -1567.919556 -9892.874023}
  addUserKnob {7 z_near l " " -STARTLINE +HIDDEN R 0 1000}
- z_near 538.4350586
+ z_near 3899.454102
  addUserKnob {12 far l "far pick" t "Picker of far point."}
- far {1416 729}
+ far {1458 648}
  addUserKnob {13 far_3d l "" t "Adjust the far position in 3D" -STARTLINE}
- far_3d {-3244.644287 643.9985352 -2416.001465}
+ far_3d {31058.96484 15762.55957 -167901.5}
  addUserKnob {7 z_far l " " -STARTLINE +HIDDEN R 0 1000}
- z_far 769.9155273
+ z_far 612837.4375
+ addUserKnob {6 mirror_p l Mirror t "Mirrors P mask." +STARTLINE}
+ addUserKnob {6 invert_p l Invert t "Inverts the P Mask." -STARTLINE}
  addUserKnob {7 opacity t "Adjust the opacity of the depth fog here. "}
- opacity 0.268
+ opacity 1
  addUserKnob {6 color_panelDropped l "panel dropped state" +HIDDEN +STARTLINE}
  color_panelDropped true
  addUserKnob {6 color_rgb_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
  color_rgb_panelDropped true
+ addUserKnob {7 hardness t "It makes the ramp sharper. 0 = smooth, 1= sharp"}
  addUserKnob {18 color_near l "color near" t "Pick the near color here. "}
  color_near {0.245096 0.525716 1}
  addUserKnob {6 color_near_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
@@ -45,28 +49,30 @@ Group {
  addUserKnob {18 color_far l "color far" t "Pick the far color here. "}
  color_far {0.089138 0.1284 0.44686}
  addUserKnob {6 color_far_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
- addUserKnob {7 units t "Units knob works with small values for big places and high values for small ones."}
- units 0.855
+ addUserKnob {7 gamma l "falloff colors" t "You can play with this knob to blend the colors more. It's similar of the hardness knob, but it's playing with a different algorithm (the gamma one)" R 0 4}
+ gamma 4
  addUserKnob {6 generate_id_depthFog l "Generate ID Depth Fog" t "Creates an additional AOV/layer with the Depth Fog only." +STARTLINE}
  addUserKnob {26 ""}
  addUserKnob {26 ramp_text l "@b;Sky Ramp" T " "}
  addUserKnob {6 enableSkyRamp l "" t "Checking this box enables the Sky Ramp effect. If you don't use it, please uncheck this box. " -STARTLINE}
  addUserKnob {26 enableSkyRamp_text l "<font color=\"\">Enable</font>" -STARTLINE T " "}
- addUserKnob {6 end_color_q l "End Color?" t "Adds an additional color in your ramp close to the end values. " -STARTLINE +HIDDEN}
+ addUserKnob {6 end_color_q l "Enable End Color" t "Adds an additional color in your ramp close to the end values. " -STARTLINE +HIDDEN}
+ end_color_q true
  addUserKnob {12 start l "start pick" t "Pick the start ramp color here. " +HIDDEN}
- start {704 1055}
+ start {688 558}
  addUserKnob {7 start_ramp l "" t "Start ramp values. It updates automatically using the pickers, but you can adjust it by hand as well." -STARTLINE +HIDDEN R 0 10000}
- start_ramp 736.6799927
+ start_ramp 30891.97266
  addUserKnob {12 end l "end pick" t "Pick the end ramp color here. " +HIDDEN}
- end {683 445}
+ end {724 176}
  addUserKnob {7 end_ramp l "" t "End ramp values. It updates automatically using the pickers, but you can adjust it by hand as well." -STARTLINE +HIDDEN R 0 10000}
- end_ramp 550.8426514
+ end_ramp -1849.077393
  addUserKnob {13 start_3d +INVISIBLE}
  start_3d {39413.46875 39413.46875 39413.46875}
  addUserKnob {13 end_3d l "end 3d" +INVISIBLE}
  end_3d {9388.392578 9388.392578 9388.392578}
  addUserKnob {7 opacity_1 l opacity t "Adjust the opacity of the sky ramp. " +HIDDEN}
- opacity_1 1
+ opacity_1 0.15
+ addUserKnob {7 hardness_ramp l hardness t "It makes the ramp sharper. 0 = smooth, 1= sharp" +HIDDEN}
  addUserKnob {18 color_start l "color start" t "Pick the start color here. " +HIDDEN}
  color_start {1 0.828971 0.472866}
  addUserKnob {6 color_start_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
@@ -75,8 +81,9 @@ Group {
  addUserKnob {6 color_end_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
  addUserKnob {6 color_rgb_1_panelDropped l "panel dropped state" +HIDDEN +STARTLINE}
  color_rgb_1_panelDropped true
+ addUserKnob {7 falloff_ramp_color l "falloff color" t "You can play with this knob to blend the colors more. It's similar of the hardness knob, but it's playing with a different algorithm (the gamma one)" R 0 4}
+ falloff_ramp_color 1
  addUserKnob {6 generate_id_skyRamp l "Generate ID Sky Ramp" t "Creates an additional AOV/layer with the Sky Ramp only. " +HIDDEN +STARTLINE}
- generate_id_skyRamp true
  addUserKnob {26 ""}
  addUserKnob {26 text_glow l "@b;Glow" T " "}
  addUserKnob {6 enable_glow l "" t "Enables the Glow Effect. This Glow follows the Mask of the Fog and Sky Ramp as well." -STARTLINE}
@@ -89,7 +96,6 @@ Group {
  addUserKnob {7 overscan R 0 100}
  overscan 100
  addUserKnob {6 crop -STARTLINE}
- crop true
  addUserKnob {26 ""}
  addUserKnob {26 _1 l mask T ""}
  addUserKnob {41 maskChannelMask l "" -STARTLINE T Merge1.maskChannelMask}
@@ -98,7 +104,7 @@ Group {
  addUserKnob {41 fringe -STARTLINE T Merge1.fringe}
  addUserKnob {41 mix T Merge1.mix}
  addUserKnob {26 ""}
- addUserKnob {26 autor l "" +STARTLINE T "<font color=\"grey\">emDepthFog v1.1 | emateofabregas.com | 2024-2025 </font>"}
+ addUserKnob {26 autor l "" +STARTLINE T "<font color=\"grey\">emDepthFog v1.2 | emateofabregas.com | 2024-2025 </font>"}
 }
  Input {
   inputs 0
@@ -107,15 +113,23 @@ Group {
   xpos 0
   ypos -134
  }
-set N602e48c0 [stack 0]
+set N84a27a80 [stack 0]
  Dot {
   name Dot10
   xpos 34
   ypos 448
  }
-set N6033c760 [stack 0]
-push $N602e48c0
+set N84aa8800 [stack 0]
+ Input {
+  inputs 0
+  name InputUTILS
+  xpos -210
+  ypos -184
+  number 2
+ }
+push $N84a27a80
  Switch {
+  inputs 2
   which 1
   name Switch3
   label UTILS
@@ -132,7 +146,7 @@ push $N602e48c0
   ypos -63
  }
  Shuffle {
-  in {P.x P.y P.z P.red}
+  in P
   in2 rgba
   alpha alpha2
   name Shuffle2
@@ -140,7 +154,7 @@ push $N602e48c0
   xpos -210
   ypos -3
  }
-set N6029e230 [stack 0]
+set N84ac8d00 [stack 0]
  Remove {
   operation keep
   channels rgba
@@ -154,10 +168,16 @@ set N6029e230 [stack 0]
   ypos 104
   disable {{!parent.unpremultiply}}
  }
-set N602b8520 [stack 0]
+set N84ac9700 [stack 0]
  Shuffle2 {
-  fromInput1 {{0} B}
-  fromInput2 {{0} B}
+  fromInput1 {
+   {0}
+   B
+  }
+  fromInput2 {
+   {0}
+   B
+  }
   mappings "4 rgba.green 0 1 rgba.green 0 1 rgba.green 0 1 rgba.alpha 0 3 rgba.green 0 1 rgba.red 0 0 rgba.green 0 1 rgba.blue 0 2"
   name Shuffle4
   label "g to alpha"
@@ -174,11 +194,32 @@ set N602b8520 [stack 0]
   xpos -652
   ypos 184
  }
-set N60359c90 [stack 0]
+ Expression {
+  expr3 "smoothstep(0,1-hardness_ramp, a)"
+  name Expression5
+  label Hardness
+  xpos -652
+  ypos 233
+  addUserKnob {20 User}
+  addUserKnob {7 hardness_ramp l hardness}
+  hardness_ramp {{parent.hardness_ramp}}
+ }
+ Expression {
+  channel3 rgba
+  expr3 "pow(a, 1/falloff)"
+  name Expression6
+  label Falloff
+  xpos -652
+  ypos 279
+  addUserKnob {20 User}
+  addUserKnob {7 falloff R 0 4}
+  falloff {{parent.falloff_ramp_color}}
+ }
+set N1833a800 [stack 0]
  Dot {
   name Dot7
   xpos -503
-  ypos 193
+  ypos 288
  }
  Merge2 {
   inputs 2
@@ -193,8 +234,8 @@ set N60359c90 [stack 0]
   xpos -503
   ypos 529
  }
-set N60382bd0 [stack 0]
-push $N60359c90
+set N84aa9000 [stack 0]
+push $N1833a800
  Constant {
   inputs 0
   channels rgb
@@ -243,10 +284,10 @@ push $N60359c90
   xpos -652
   ypos 787
  }
-set N603d13a0 [stack 0]
-push $N6029e230
+set N81fb0000 [stack 0]
+push $N84ac8d00
  Shuffle {
-  in depth_extra
+  in depth
   in2 rgba
   alpha red
   name Shuffle1
@@ -273,24 +314,44 @@ push $N6029e230
   whitepoint {{parent.z_far}}
   white 0.5
   multiply {{parent.opacity}}
+  gamma {{parent.gamma}}
   white_clamp true
   name Grade1
   label "Depth Range"
   xpos -1053
-  ypos 154
+  ypos 145
  }
-set N603fefd0 [stack 0]
+ Expression {
+  channel3 rgba
+  expr3 1-a
+  name Expression8
+  label Invert
+  xpos -1053
+  ypos 190
+  disable {{!parent.invert_p}}
+ }
+ Expression {
+  expr3 "smoothstep(0,1-hardness_depth, a)"
+  name Expression7
+  label Hardness
+  xpos -1053
+  ypos 236
+  addUserKnob {20 User}
+  addUserKnob {7 hardness_depth l hardness}
+  hardness_depth {{parent.hardness}}
+ }
+set N89078f00 [stack 0]
  Dot {
   name Dot9
   xpos -901
-  ypos 163
+  ypos 245
  }
  Dot {
   name Dot8
   xpos -901
   ypos 501
  }
-push $N603fefd0
+push $N89078f00
  Constant {
   inputs 0
   channels rgb
@@ -301,7 +362,7 @@ push $N603fefd0
   ypos 148
   disable {{!parent.near_color_q}}
  }
-set N6041dbe0 [stack 0]
+set N81fd8000 [stack 0]
  Constant {
   inputs 0
   channels rgb
@@ -311,7 +372,7 @@ set N6041dbe0 [stack 0]
   xpos -1187
   ypos 240
  }
-set N60428840 [stack 0]
+set N81fd8a00 [stack 0]
  Merge2 {
   inputs 2+1
   operation plus
@@ -333,62 +394,67 @@ set N60428840 [stack 0]
   xpos -1019
   ypos 620
  }
-push $N602b8520
- Add {
-  channels rgb
-  value {{-parent.near_3d.x} {-parent.near_3d.y} {-parent.near_3d.z} 0}
-  name Add1
-  label near
-  xpos -291
-  ypos 149
- }
+push $N84ac9700
  Expression {
+  temp_name0 dot
+  temp_expr0 "(far_x - near_x)*(r - near_x) + (far_y - near_y)*(g - near_y) + (far_z - near_z)*(b - near_z)"
+  temp_name1 len2
+  temp_expr1 "(far_x - near_x)*(far_x - near_x) + (far_y - near_y)*(far_y - near_y) + (far_z - near_z)*(far_z - near_z) + 1e-8"
+  temp_name2 clamp
+  temp_expr2 "clamp(dot/len2, 0, 1)"
+  temp_name3 mask
+  temp_expr3 "smoothstep(0,1-hardness, clamp)"
   channel3 rgba
-  expr3 "smoothstep(0,1.36203, clamp(1-abs(r)*near) ) * smoothstep(0,1.35494, clamp(1-abs(g)*near) ) * smoothstep(0,1.36203, clamp(1-abs(b)*near))"
+  expr3 mask
   name Expression1
-  label near_convert
-  xpos -291
-  ypos 198
+  label "3D ramp"
+  xpos -210
+  ypos 140
   addUserKnob {20 User}
-  addUserKnob {7 near}
-  near {{0.002*units}}
+  addUserKnob {7 near_x}
+  near_x {{parent.near_3d.x}}
+  addUserKnob {7 near_y}
+  near_y {{parent.near_3d.y}}
+  addUserKnob {7 near_z}
+  near_z {{parent.near_3d.z}}
+  addUserKnob {7 far_x}
+  far_x {{parent.far_3d.x}}
+  addUserKnob {7 far_y}
+  far_y {{parent.far_3d.y}}
+  addUserKnob {7 far_z}
+  far_z {{parent.far_3d.z}}
+  addUserKnob {7 hardness}
+  hardness {{parent.hardness}}
  }
-push $N602b8520
- Add {
-  channels rgb
-  value {{-parent.far_3d.x} {-parent.far_3d.y} {-parent.far_3d.z} 0}
-  name Add2
-  label far
-  xpos -139
-  ypos 148
+ Expression {
+  expr3 "a * (1.0 - a) * 4.0"
+  name Expression2
+  label Mirror
+  xpos -210
+  ypos 186
+  disable {{!parent.mirror_p}}
  }
  Expression {
   channel3 rgba
-  expr3 "smoothstep(0,1, clamp(1-abs(r)*far) ) * smoothstep(0,1, clamp(1-abs(g)*far) ) * smoothstep(0,1, clamp(1-abs(b)*far))"
-  name Expression2
-  label far_convert
-  xpos -139
-  ypos 199
-  addUserKnob {20 User}
-  addUserKnob {7 far}
-  far {{0.002*units}}
+  expr3 1-a
+  name Expression3
+  label Invert
+  xpos -210
+  ypos 243
+  disable {{!parent.invert_p}}
  }
- Merge2 {
-  inputs 2
-  operation from
-  name Merge2
-  xpos -203
-  ypos 258
- }
- Clamp {
-  channels rgba
-  maximum_enable false
-  name Clamp
-  label black_values
-  xpos -203
+ Expression {
+  channel3 rgba
+  expr3 "pow(a, 1/falloff)"
+  name Expression4
+  label Falloff
+  xpos -210
   ypos 317
+  addUserKnob {20 User}
+  addUserKnob {7 falloff R 0 4}
+  falloff {{parent.gamma}}
  }
-set N604a9700 [stack 0]
+set N12b62800 [stack 0]
  Dot {
   name Dot5
   xpos -56
@@ -399,15 +465,15 @@ set N604a9700 [stack 0]
   xpos -56
   ypos 539
  }
-push $N604a9700
-push $N60428840
-push $N6041dbe0
+push $N12b62800
+push $N81fd8a00
+push $N81fd8000
  Merge2 {
   inputs 2+1
   operation plus
   output {rgba.red rgba.green rgba.blue -rgba.alpha}
   name Merge9
-  xpos -203
+  xpos -210
   ypos 380
  }
  Copy {
@@ -439,7 +505,7 @@ push $N6041dbe0
   xpos -203
   ypos 759
  }
-set N605048b0 [stack 0]
+set N82051900 [stack 0]
  Merge2 {
   inputs 2
   operation plus
@@ -453,10 +519,10 @@ set N605048b0 [stack 0]
   xpos -169
   ypos 855
  }
-set N6051fc70 [stack 0]
-push $N603d13a0
-push $N605048b0
-push $N6051fc70
+set N82030800 [stack 0]
+push $N81fb0000
+push $N82051900
+push $N82030800
  Constant {
   inputs 0
   color 1
@@ -481,8 +547,8 @@ push $N6051fc70
   ypos 846
   disable {{"\[exists parent.input1]"}}
  }
-push $N6051fc70
-push $N6033c760
+push $N82030800
+push $N84aa8800
  Dot {
   name Dot1
   xpos 34
@@ -567,7 +633,7 @@ push $N6033c760
    xpos -50
    ypos 83
   }
-set N60576dd0 [stack 0]
+set N82031000 [stack 0]
   Shuffle {
    in rgb
    in2 rgba
@@ -584,8 +650,8 @@ set N60576dd0 [stack 0]
    ypos 80
    disable {{"!\[exists parent.input1]"}}
   }
-set N6058da00 [stack 0]
-push $N6058da00
+set N451e0000 [stack 0]
+push $N451e0000
   Grade {
    inputs 1+1
    channels rgba
@@ -605,7 +671,7 @@ push $N6058da00
    xpos 106
    ypos 134
   }
-set N605b3270 [stack 0]
+set N451e2d00 [stack 0]
   Blur {
    channels rgba
    size {{parent.BlurMaster.size*pow(a,b)*1024} {parent.BlurMaster.size*pow(a,b)*1024}}
@@ -616,7 +682,7 @@ set N605b3270 [stack 0]
    ypos 174
    disable {{"sample < 11"}}
   }
-push $N605b3270
+push $N451e2d00
   Blur {
    channels rgba
    size {{parent.BlurMaster.size*pow(a,b)*512} {parent.BlurMaster.size*pow(a,b)*512}}
@@ -627,7 +693,7 @@ push $N605b3270
    ypos 176
    disable {{"sample < 10"}}
   }
-push $N605b3270
+push $N451e2d00
   Blur {
    channels rgba
    size {{parent.BlurMaster.size*pow(a,b)*256} {parent.BlurMaster.size*pow(a,b)*256}}
@@ -638,7 +704,7 @@ push $N605b3270
    ypos 176
    disable {{"sample < 9"}}
   }
-push $N605b3270
+push $N451e2d00
   Blur {
    channels rgba
    size {{parent.BlurMaster.size*pow(a,b)*128} {parent.BlurMaster.size*pow(a,b)*128}}
@@ -649,7 +715,7 @@ push $N605b3270
    ypos 175
    disable {{"sample < 8"}}
   }
-push $N605b3270
+push $N451e2d00
   Blur {
    channels rgba
    size {{parent.BlurMaster.size*pow(a,b)*64} {parent.BlurMaster.size*pow(a,b)*64}}
@@ -660,7 +726,7 @@ push $N605b3270
    ypos 175
    disable {{"sample < 7"}}
   }
-push $N605b3270
+push $N451e2d00
   Blur {
    channels rgba
    size {{parent.BlurMaster.size*pow(a,b)*32} {parent.BlurMaster.size*pow(a,b)*32}}
@@ -671,7 +737,7 @@ push $N605b3270
    ypos 176
    disable {{"sample < 6"}}
   }
-push $N605b3270
+push $N451e2d00
   Blur {
    channels rgba
    size {{parent.BlurMaster.size*pow(a,b)*16} {parent.BlurMaster.size*pow(a,b)*16}}
@@ -682,7 +748,7 @@ push $N605b3270
    ypos 176
    disable {{"sample < 5"}}
   }
-push $N605b3270
+push $N451e2d00
   Blur {
    channels rgba
    size {{parent.BlurMaster.size*pow(a,b)*8} {parent.BlurMaster.size*pow(a,b)*8}}
@@ -693,7 +759,7 @@ push $N605b3270
    ypos 176
    disable {{"sample < 4"}}
   }
-push $N605b3270
+push $N451e2d00
   Blur {
    channels rgba
    size {{parent.BlurMaster.size*pow(a,b)*4} {parent.BlurMaster.size*pow(a,b)*4}}
@@ -704,7 +770,7 @@ push $N605b3270
    ypos 175
    disable {{"sample < 3"}}
   }
-push $N605b3270
+push $N451e2d00
   Blur {
    channels rgba
    size {{parent.BlurMaster.size*pow(a,b)*2} {parent.BlurMaster.size*pow(a,b)*2}}
@@ -716,7 +782,7 @@ push $N605b3270
    disable {{"sample < 2"}}
   }
 push 0
-push $N605b3270
+push $N451e2d00
   Blur {
    channels rgba
    size {{parent.size} {parent.BlurMaster.size.w*anamorph}}
@@ -726,7 +792,7 @@ push $N605b3270
    ypos 186
    disable {{"sample == 0"}}
   }
-push $N605b3270
+push $N451e2d00
   Merge2 {
    inputs 12+1
    operation plus
@@ -749,7 +815,7 @@ push $N605b3270
    xpos 106
    ypos 290
   }
-push $N60576dd0
+push $N82031000
   Remove {
    channels rgba
    name Remove1
@@ -777,9 +843,9 @@ push $N60576dd0
    ypos 374
   }
  end_group
-set N605595b0 [stack 0]
-push $N603d13a0
-push $N60382bd0
+set N5f7bdc00 [stack 0]
+push $N81fb0000
+push $N84aa9000
  Grade {
   channels rgba
   white {{parent.opacity_1}}
@@ -793,9 +859,9 @@ push $N60382bd0
   xpos -537
   ypos 691
  }
-push $N605048b0
-push $N603fefd0
-push $N604a9700
+push $N82051900
+push $N89078f00
+push $N12b62800
  Switch {
   inputs 2
   which {{parent.mode}}
@@ -821,7 +887,7 @@ push $N604a9700
   xpos -222
   ypos 999
  }
-push $N605595b0
+push $N5f7bdc00
  Switch {
   inputs 6
   which {{parent.preview}}

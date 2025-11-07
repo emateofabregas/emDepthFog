@@ -1,5 +1,7 @@
 # emDepthFog 1.2
-**emDepthFog** is a gizmo for creating 2D Fog and Sky Ramp using P or ZDepth channels, and also adding a subtle glow following these masks.
+![emDepthFog_Cover](https://github.com/user-attachments/assets/a3fee3ff-8547-490e-987d-bbfc54ce19d5)
+
+**emDepthFog** is a gizmo for creating 2D Fog and Sky Ramp using P or ZDepth channels, and also adding a subtle glow following these masks. Thank you Michael Shkliaryk for permited to use your render for this demo.
 
 ![emDepthFog_Knobs](https://github.com/user-attachments/assets/bf71838c-412c-4abe-bfb9-c80d09b40a2e)
 

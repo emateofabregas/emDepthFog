@@ -7,7 +7,6 @@ Group {
  label "\[value mode]"
  addUserKnob {20 User l emDepthFog t "Make a fake Fog using P_World or ZDepth AOVs."}
  addUserKnob {4 preview l "view mode" t "Different previews are designed to check the Final Image, the fog, and the fog with color and glow stuff." M {"Final Image" Fog "Fog with Color" Sky "Sky with Color" Glow "" "" "" "" "" ""}}
- preview Fog
  addUserKnob {26 ""}
  addUserKnob {6 input_utils l "Input UTILS" t "Creates an input UTILS if you have the Data AOV in a different brunch." +STARTLINE}
  addUserKnob {6 unpremultiply l "Unpremultiply UTILS" t "Unpremultiply the UTILS/Data AOVS." -STARTLINE}
@@ -35,7 +34,7 @@ Group {
  addUserKnob {6 mirror_p l Mirror t "Mirrors P mask." +STARTLINE}
  addUserKnob {6 invert_p l Invert t "Inverts the P Mask." -STARTLINE}
  addUserKnob {7 opacity t "Adjust the opacity of the depth fog here. "}
- opacity 1
+ opacity 0.5
  addUserKnob {6 color_panelDropped l "panel dropped state" +HIDDEN +STARTLINE}
  color_panelDropped true
  addUserKnob {6 color_rgb_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
@@ -103,7 +102,7 @@ Group {
  addUserKnob {41 fringe -STARTLINE T Merge1.fringe}
  addUserKnob {41 mix T Merge1.mix}
  addUserKnob {26 ""}
- addUserKnob {26 autor l "" +STARTLINE T "<font color=\"grey\">emDepthFog v1.2 | emateofabregas | 2024-2025 </font>"}
+ addUserKnob {26 autor l "" +STARTLINE T "<font color=\"grey\">emDepthFog v1.2 | emateofabregas.com | 2024-2025 </font>"}
 }
  Input {
   inputs 0
@@ -112,14 +111,14 @@ Group {
   xpos 0
   ypos -134
  }
-set N82afcd80 [stack 0]
+set N18bd4480 [stack 0]
  Dot {
   name Dot10
   xpos 34
   ypos 448
  }
-set N85669c00 [stack 0]
-push $N82afcd80
+set N73ed4000 [stack 0]
+push $N18bd4480
  Switch {
   which 1
   name Switch3
@@ -145,7 +144,7 @@ push $N82afcd80
   xpos -210
   ypos -3
  }
-set N8293e800 [stack 0]
+set N73ecd400 [stack 0]
  Remove {
   operation keep
   channels rgba
@@ -159,7 +158,7 @@ set N8293e800 [stack 0]
   ypos 104
   disable {{!parent.unpremultiply}}
  }
-set N8293f200 [stack 0]
+set N73ecde00 [stack 0]
  Shuffle2 {
   fromInput1 {
    {0}
@@ -206,7 +205,7 @@ set N8293f200 [stack 0]
   addUserKnob {7 falloff R 0 4}
   falloff {{parent.falloff_ramp_color}}
  }
-set N8297ed00 [stack 0]
+set N73efb900 [stack 0]
  Dot {
   name Dot7
   xpos -503
@@ -225,8 +224,8 @@ set N8297ed00 [stack 0]
   xpos -503
   ypos 529
  }
-set N8299e400 [stack 0]
-push $N8297ed00
+set N73ed4800 [stack 0]
+push $N73efb900
  Constant {
   inputs 0
   channels rgb
@@ -275,8 +274,8 @@ push $N8297ed00
   xpos -652
   ypos 787
  }
-set N73d5a500 [stack 0]
-push $N8293e800
+set N73f3ed00 [stack 0]
+push $N73ecd400
  Shuffle {
   in depth
   in2 rgba
@@ -331,7 +330,7 @@ push $N8293e800
   addUserKnob {7 hardness_depth l hardness}
   hardness_depth {{parent.hardness}}
  }
-set N73d7ea00 [stack 0]
+set N73f67200 [stack 0]
  Dot {
   name Dot9
   xpos -901
@@ -342,7 +341,7 @@ set N73d7ea00 [stack 0]
   xpos -901
   ypos 501
  }
-push $N73d7ea00
+push $N73f67200
  Constant {
   inputs 0
   channels rgb
@@ -353,7 +352,7 @@ push $N73d7ea00
   ypos 148
   disable {{!parent.near_color_q}}
  }
-set N73d7ef00 [stack 0]
+set N73f67700 [stack 0]
  Constant {
   inputs 0
   channels rgb
@@ -363,7 +362,7 @@ set N73d7ef00 [stack 0]
   xpos -1187
   ypos 240
  }
-set N73d7f900 [stack 0]
+set N73f92500 [stack 0]
  Merge2 {
   inputs 2+1
   operation plus
@@ -385,7 +384,7 @@ set N73d7f900 [stack 0]
   xpos -1019
   ypos 620
  }
-push $N8293f200
+push $N73ecde00
  Expression {
   temp_name0 dot
   temp_expr0 "(far_x - near_x)*(r - near_x) + (far_y - near_y)*(g - near_y) + (far_z - near_z)*(b - near_z)"
@@ -445,7 +444,7 @@ push $N8293f200
   addUserKnob {7 falloff R 0 4}
   falloff {{parent.gamma}}
  }
-set N73dde000 [stack 0]
+set N73f94800 [stack 0]
  Dot {
   name Dot5
   xpos -56
@@ -456,9 +455,9 @@ set N73dde000 [stack 0]
   xpos -56
   ypos 539
  }
-push $N73dde000
-push $N73d7f900
-push $N73d7ef00
+push $N73f94800
+push $N73f92500
+push $N73f67700
  Merge2 {
   inputs 2+1
   operation plus
@@ -496,7 +495,7 @@ push $N73d7ef00
   xpos -203
   ypos 759
  }
-set N73e12000 [stack 0]
+set N73ff6800 [stack 0]
  Merge2 {
   inputs 2
   operation plus
@@ -510,10 +509,10 @@ set N73e12000 [stack 0]
   xpos -169
   ypos 855
  }
-set N8299fc00 [stack 0]
-push $N73d5a500
-push $N73e12000
-push $N8299fc00
+set N74012000 [stack 0]
+push $N73f3ed00
+push $N73ff6800
+push $N74012000
  Constant {
   inputs 0
   color 1
@@ -538,8 +537,8 @@ push $N8299fc00
   ypos 846
   disable {{"\[exists parent.input1]"}}
  }
-push $N8299fc00
-push $N85669c00
+push $N74012000
+push $N73ed4000
  Dot {
   name Dot1
   xpos 34
@@ -570,7 +569,7 @@ push $N85669c00
   addUserKnob {41 in l channels t "Channels where the glow is affected. By default is 'rgb' channel. The alpha is always getting by the beauty/rgba layer." T Shuffle1.in}
   addUserKnob {26 main_text l "@b;Main" t "Main section."}
   addUserKnob {3 sample t "Resolution in the effect. More samples = smooth transition. Max samples: 11."}
-  sample 6
+  sample 5
   addUserKnob {7 anamorph t "Simulates anamorphic lens flares by altering the default 1:1 flare shape."}
   anamorph 1
   addUserKnob {7 intensity t "Intensity of the effect (Glow)." R 0 10}
@@ -624,7 +623,7 @@ push $N85669c00
    xpos -50
    ypos 83
   }
-set N73e38400 [stack 0]
+set N74012800 [stack 0]
   Shuffle {
    in rgb
    in2 rgba
@@ -641,8 +640,8 @@ set N73e38400 [stack 0]
    ypos 80
    disable {{"!\[exists parent.input1]"}}
   }
-set N73e14300 [stack 0]
-push $N73e14300
+set N7401ef00 [stack 0]
+push $N7401ef00
   Grade {
    inputs 1+1
    channels rgba
@@ -662,7 +661,7 @@ push $N73e14300
    xpos 106
    ypos 134
   }
-set N75665400 [stack 0]
+set N74060000 [stack 0]
   Blur {
    channels rgba
    size {{parent.BlurMaster.size*pow(a,b)*1024} {parent.BlurMaster.size*pow(a,b)*1024}}
@@ -673,7 +672,7 @@ set N75665400 [stack 0]
    ypos 174
    disable {{"sample < 11"}}
   }
-push $N75665400
+push $N74060000
   Blur {
    channels rgba
    size {{parent.BlurMaster.size*pow(a,b)*512} {parent.BlurMaster.size*pow(a,b)*512}}
@@ -684,7 +683,7 @@ push $N75665400
    ypos 176
    disable {{"sample < 10"}}
   }
-push $N75665400
+push $N74060000
   Blur {
    channels rgba
    size {{parent.BlurMaster.size*pow(a,b)*256} {parent.BlurMaster.size*pow(a,b)*256}}
@@ -695,7 +694,7 @@ push $N75665400
    ypos 176
    disable {{"sample < 9"}}
   }
-push $N75665400
+push $N74060000
   Blur {
    channels rgba
    size {{parent.BlurMaster.size*pow(a,b)*128} {parent.BlurMaster.size*pow(a,b)*128}}
@@ -706,7 +705,7 @@ push $N75665400
    ypos 175
    disable {{"sample < 8"}}
   }
-push $N75665400
+push $N74060000
   Blur {
    channels rgba
    size {{parent.BlurMaster.size*pow(a,b)*64} {parent.BlurMaster.size*pow(a,b)*64}}
@@ -717,7 +716,7 @@ push $N75665400
    ypos 175
    disable {{"sample < 7"}}
   }
-push $N75665400
+push $N74060000
   Blur {
    channels rgba
    size {{parent.BlurMaster.size*pow(a,b)*32} {parent.BlurMaster.size*pow(a,b)*32}}
@@ -728,7 +727,7 @@ push $N75665400
    ypos 176
    disable {{"sample < 6"}}
   }
-push $N75665400
+push $N74060000
   Blur {
    channels rgba
    size {{parent.BlurMaster.size*pow(a,b)*16} {parent.BlurMaster.size*pow(a,b)*16}}
@@ -739,7 +738,7 @@ push $N75665400
    ypos 176
    disable {{"sample < 5"}}
   }
-push $N75665400
+push $N74060000
   Blur {
    channels rgba
    size {{parent.BlurMaster.size*pow(a,b)*8} {parent.BlurMaster.size*pow(a,b)*8}}
@@ -750,7 +749,7 @@ push $N75665400
    ypos 176
    disable {{"sample < 4"}}
   }
-push $N75665400
+push $N74060000
   Blur {
    channels rgba
    size {{parent.BlurMaster.size*pow(a,b)*4} {parent.BlurMaster.size*pow(a,b)*4}}
@@ -761,7 +760,7 @@ push $N75665400
    ypos 175
    disable {{"sample < 3"}}
   }
-push $N75665400
+push $N74060000
   Blur {
    channels rgba
    size {{parent.BlurMaster.size*pow(a,b)*2} {parent.BlurMaster.size*pow(a,b)*2}}
@@ -773,7 +772,7 @@ push $N75665400
    disable {{"sample < 2"}}
   }
 push 0
-push $N75665400
+push $N74060000
   Blur {
    channels rgba
    size {{parent.size} {parent.BlurMaster.size.w*anamorph}}
@@ -783,7 +782,7 @@ push $N75665400
    ypos 186
    disable {{"sample == 0"}}
   }
-push $N75665400
+push $N74060000
   Merge2 {
    inputs 12+1
    operation plus
@@ -806,7 +805,7 @@ push $N75665400
    xpos 106
    ypos 290
   }
-push $N73e38400
+push $N74012800
   Remove {
    channels rgba
    name Remove1
@@ -834,9 +833,9 @@ push $N73e38400
    ypos 374
   }
  end_group
-set N8300e300 [stack 0]
-push $N73d5a500
-push $N8299e400
+set N9337c700 [stack 0]
+push $N73f3ed00
+push $N73ed4800
  Grade {
   channels rgba
   white {{parent.opacity_1}}
@@ -850,9 +849,9 @@ push $N8299e400
   xpos -537
   ypos 691
  }
-push $N73e12000
-push $N73d7ea00
-push $N73dde000
+push $N73ff6800
+push $N73f67200
+push $N73f94800
  Switch {
   inputs 2
   which {{parent.mode}}
@@ -878,7 +877,7 @@ push $N73dde000
   xpos -222
   ypos 999
  }
-push $N8300e300
+push $N9337c700
  Switch {
   inputs 6
   which {{parent.preview}}

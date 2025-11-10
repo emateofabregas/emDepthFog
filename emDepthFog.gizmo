@@ -1,4 +1,4 @@
-add_layer {worldPositions worldPositions.X worldPositions.Y worldPositions.Z}
+add_layer {P P.x P.y P.z P.red P.green P.blue P.alpha P.X P.Y P.Z P.z}
 Group {
  name emDepthFog1
  inputs 2
@@ -20,36 +20,35 @@ Group {
  addUserKnob {6 near_color_q l "Enable Near Color" t "Adds an additional color in your depth fog close to the near values. " -STARTLINE}
  near_color_q true
  addUserKnob {12 near l "near pick" t "Picker of near point."}
- near {64 228}
+ near {1030 780}
  addUserKnob {13 near_3d l "" t "Adjust the near position in 3D" -STARTLINE}
- near_3d {521.4532471 -3059.993896 116.1064682}
+ near_3d {-6605.059082 1363.104248 -7421.023438}
  addUserKnob {7 z_near l " " -STARTLINE +HIDDEN R 0 1000}
- z_near 3899.454102
  addUserKnob {12 far l "far pick" t "Picker of far point."}
- far {500 668}
+ far {413 770}
  addUserKnob {13 far_3d l "" t "Adjust the far position in 3D" -STARTLINE}
- far_3d {-2610.318848 -9125.874023 131.3745117}
+ far_3d {-6605.059082 1363.104248 9993.944336}
  addUserKnob {7 z_far l " " -STARTLINE +HIDDEN R 0 1000}
  z_far 612837.4375
  addUserKnob {6 mirror_p l Mirror t "Mirrors P mask." +STARTLINE}
  addUserKnob {6 invert_p l Invert t "Inverts the P Mask." -STARTLINE}
  addUserKnob {7 opacity t "Adjust the opacity of the depth fog here. "}
- opacity 0.5
+ opacity 0.2
  addUserKnob {6 color_panelDropped l "panel dropped state" +HIDDEN +STARTLINE}
  color_panelDropped true
  addUserKnob {6 color_rgb_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
  color_rgb_panelDropped true
  addUserKnob {7 hardness t "It makes the ramp sharper. 0 = smooth, 1= sharp"}
  addUserKnob {18 color_near l "color near" t "Pick the near color here. "}
- color_near {0.245096 0.525716 1}
+ color_near {0.9838265777 1.087949157 1.996488333}
  addUserKnob {6 color_near_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
  addUserKnob {6 color_rgb_2_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
  color_rgb_2_panelDropped true
  addUserKnob {18 color_far l "color far" t "Pick the far color here. "}
- color_far {0.089138 0.1284 0.44686}
+ color_far {0.496378 0.496378 0.496378}
  addUserKnob {6 color_far_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
  addUserKnob {7 gamma l "falloff colors" t "You can play with this knob to blend the colors more. It's similar of the hardness knob, but it's playing with a different algorithm (the gamma one)" R 0 4}
- gamma 4
+ gamma 1
  addUserKnob {6 generate_id_depthFog l "Generate ID Depth Fog" t "Creates an additional AOV/layer with the Depth Fog only." +STARTLINE}
  addUserKnob {26 ""}
  addUserKnob {26 ramp_text l "@b;Sky Ramp" T " "}
@@ -58,13 +57,13 @@ Group {
  addUserKnob {6 end_color_q l "Enable End Color" t "Adds an additional color in your ramp close to the end values. " -STARTLINE +HIDDEN}
  end_color_q true
  addUserKnob {12 start l "start pick" t "Pick the start ramp color here. " +HIDDEN}
- start {688 558}
+ start {1156 1108}
  addUserKnob {7 start_ramp l "" t "Start ramp values. It updates automatically using the pickers, but you can adjust it by hand as well." -STARTLINE +HIDDEN R 0 10000}
- start_ramp 30891.97266
+ start_ramp 2049.758545
  addUserKnob {12 end l "end pick" t "Pick the end ramp color here. " +HIDDEN}
- end {724 176}
+ end {1066 814}
  addUserKnob {7 end_ramp l "" t "End ramp values. It updates automatically using the pickers, but you can adjust it by hand as well." -STARTLINE +HIDDEN R 0 10000}
- end_ramp -1849.077393
+ end_ramp 1434.600342
  addUserKnob {13 start_3d +INVISIBLE}
  start_3d {39413.46875 39413.46875 39413.46875}
  addUserKnob {13 end_3d l "end 3d" +INVISIBLE}
@@ -81,6 +80,7 @@ Group {
  addUserKnob {6 color_rgb_1_panelDropped l "panel dropped state" +HIDDEN +STARTLINE}
  color_rgb_1_panelDropped true
  addUserKnob {7 falloff_ramp_color l "falloff color" t "You can play with this knob to blend the colors more. It's similar of the hardness knob, but it's playing with a different algorithm (the gamma one)" +HIDDEN R 0 4}
+ falloff_ramp_color 1
  addUserKnob {6 generate_id_skyRamp l "Generate ID Sky Ramp" t "Creates an additional AOV/layer with the Sky Ramp only. " +HIDDEN +STARTLINE}
  addUserKnob {26 ""}
  addUserKnob {26 text_glow l "@b;Glow" T " "}
@@ -111,14 +111,14 @@ Group {
   xpos 0
   ypos -134
  }
-set N18bd4480 [stack 0]
+set Nb0544480 [stack 0]
  Dot {
   name Dot10
   xpos 34
   ypos 448
  }
-set N73ed4000 [stack 0]
-push $N18bd4480
+set N88364000 [stack 0]
+push $Nb0544480
  Switch {
   which 1
   name Switch3
@@ -136,7 +136,7 @@ push $N18bd4480
   ypos -63
  }
  Shuffle {
-  in worldPositions
+  in P
   in2 rgba
   alpha alpha2
   name Shuffle2
@@ -144,7 +144,7 @@ push $N18bd4480
   xpos -210
   ypos -3
  }
-set N73ecd400 [stack 0]
+set N8835d400 [stack 0]
  Remove {
   operation keep
   channels rgba
@@ -158,7 +158,7 @@ set N73ecd400 [stack 0]
   ypos 104
   disable {{!parent.unpremultiply}}
  }
-set N73ecde00 [stack 0]
+set N8835de00 [stack 0]
  Shuffle2 {
   fromInput1 {
    {0}
@@ -205,7 +205,7 @@ set N73ecde00 [stack 0]
   addUserKnob {7 falloff R 0 4}
   falloff {{parent.falloff_ramp_color}}
  }
-set N73efb900 [stack 0]
+set N8838f900 [stack 0]
  Dot {
   name Dot7
   xpos -503
@@ -224,8 +224,8 @@ set N73efb900 [stack 0]
   xpos -503
   ypos 529
  }
-set N73ed4800 [stack 0]
-push $N73efb900
+set N88364800 [stack 0]
+push $N8838f900
  Constant {
   inputs 0
   channels rgb
@@ -274,8 +274,8 @@ push $N73efb900
   xpos -652
   ypos 787
  }
-set N73f3ed00 [stack 0]
-push $N73ecd400
+set N883d0d00 [stack 0]
+push $N8835d400
  Shuffle {
   in depth
   in2 rgba
@@ -330,7 +330,7 @@ push $N73ecd400
   addUserKnob {7 hardness_depth l hardness}
   hardness_depth {{parent.hardness}}
  }
-set N73f67200 [stack 0]
+set N883f9200 [stack 0]
  Dot {
   name Dot9
   xpos -901
@@ -341,7 +341,7 @@ set N73f67200 [stack 0]
   xpos -901
   ypos 501
  }
-push $N73f67200
+push $N883f9200
  Constant {
   inputs 0
   channels rgb
@@ -352,7 +352,7 @@ push $N73f67200
   ypos 148
   disable {{!parent.near_color_q}}
  }
-set N73f67700 [stack 0]
+set N883f9700 [stack 0]
  Constant {
   inputs 0
   channels rgb
@@ -362,7 +362,7 @@ set N73f67700 [stack 0]
   xpos -1187
   ypos 240
  }
-set N73f92500 [stack 0]
+set N88ae4500 [stack 0]
  Merge2 {
   inputs 2+1
   operation plus
@@ -384,7 +384,7 @@ set N73f92500 [stack 0]
   xpos -1019
   ypos 620
  }
-push $N73ecde00
+push $N8835de00
  Expression {
   temp_name0 dot
   temp_expr0 "(far_x - near_x)*(r - near_x) + (far_y - near_y)*(g - near_y) + (far_z - near_z)*(b - near_z)"
@@ -444,7 +444,7 @@ push $N73ecde00
   addUserKnob {7 falloff R 0 4}
   falloff {{parent.gamma}}
  }
-set N73f94800 [stack 0]
+set N88ae6800 [stack 0]
  Dot {
   name Dot5
   xpos -56
@@ -455,9 +455,9 @@ set N73f94800 [stack 0]
   xpos -56
   ypos 539
  }
-push $N73f94800
-push $N73f92500
-push $N73f67700
+push $N88ae6800
+push $N88ae4500
+push $N883f9700
  Merge2 {
   inputs 2+1
   operation plus
@@ -495,7 +495,7 @@ push $N73f67700
   xpos -203
   ypos 759
  }
-set N73ff6800 [stack 0]
+set N88b4e800 [stack 0]
  Merge2 {
   inputs 2
   operation plus
@@ -509,10 +509,10 @@ set N73ff6800 [stack 0]
   xpos -169
   ypos 855
  }
-set N74012000 [stack 0]
-push $N73f3ed00
-push $N73ff6800
-push $N74012000
+set N88b64000 [stack 0]
+push $N883d0d00
+push $N88b4e800
+push $N88b64000
  Constant {
   inputs 0
   color 1
@@ -537,8 +537,8 @@ push $N74012000
   ypos 846
   disable {{"\[exists parent.input1]"}}
  }
-push $N74012000
-push $N73ed4000
+push $N88b64000
+push $N88364000
  Dot {
   name Dot1
   xpos 34
@@ -623,7 +623,7 @@ push $N73ed4000
    xpos -50
    ypos 83
   }
-set N74012800 [stack 0]
+set N88b64800 [stack 0]
   Shuffle {
    in rgb
    in2 rgba
@@ -640,8 +640,8 @@ set N74012800 [stack 0]
    ypos 80
    disable {{"!\[exists parent.input1]"}}
   }
-set N7401ef00 [stack 0]
-push $N7401ef00
+set N88b70f00 [stack 0]
+push $N88b70f00
   Grade {
    inputs 1+1
    channels rgba
@@ -661,7 +661,7 @@ push $N7401ef00
    xpos 106
    ypos 134
   }
-set N74060000 [stack 0]
+set N88bb2000 [stack 0]
   Blur {
    channels rgba
    size {{parent.BlurMaster.size*pow(a,b)*1024} {parent.BlurMaster.size*pow(a,b)*1024}}
@@ -672,7 +672,7 @@ set N74060000 [stack 0]
    ypos 174
    disable {{"sample < 11"}}
   }
-push $N74060000
+push $N88bb2000
   Blur {
    channels rgba
    size {{parent.BlurMaster.size*pow(a,b)*512} {parent.BlurMaster.size*pow(a,b)*512}}
@@ -683,7 +683,7 @@ push $N74060000
    ypos 176
    disable {{"sample < 10"}}
   }
-push $N74060000
+push $N88bb2000
   Blur {
    channels rgba
    size {{parent.BlurMaster.size*pow(a,b)*256} {parent.BlurMaster.size*pow(a,b)*256}}
@@ -694,7 +694,7 @@ push $N74060000
    ypos 176
    disable {{"sample < 9"}}
   }
-push $N74060000
+push $N88bb2000
   Blur {
    channels rgba
    size {{parent.BlurMaster.size*pow(a,b)*128} {parent.BlurMaster.size*pow(a,b)*128}}
@@ -705,7 +705,7 @@ push $N74060000
    ypos 175
    disable {{"sample < 8"}}
   }
-push $N74060000
+push $N88bb2000
   Blur {
    channels rgba
    size {{parent.BlurMaster.size*pow(a,b)*64} {parent.BlurMaster.size*pow(a,b)*64}}
@@ -716,7 +716,7 @@ push $N74060000
    ypos 175
    disable {{"sample < 7"}}
   }
-push $N74060000
+push $N88bb2000
   Blur {
    channels rgba
    size {{parent.BlurMaster.size*pow(a,b)*32} {parent.BlurMaster.size*pow(a,b)*32}}
@@ -727,7 +727,7 @@ push $N74060000
    ypos 176
    disable {{"sample < 6"}}
   }
-push $N74060000
+push $N88bb2000
   Blur {
    channels rgba
    size {{parent.BlurMaster.size*pow(a,b)*16} {parent.BlurMaster.size*pow(a,b)*16}}
@@ -738,7 +738,7 @@ push $N74060000
    ypos 176
    disable {{"sample < 5"}}
   }
-push $N74060000
+push $N88bb2000
   Blur {
    channels rgba
    size {{parent.BlurMaster.size*pow(a,b)*8} {parent.BlurMaster.size*pow(a,b)*8}}
@@ -749,7 +749,7 @@ push $N74060000
    ypos 176
    disable {{"sample < 4"}}
   }
-push $N74060000
+push $N88bb2000
   Blur {
    channels rgba
    size {{parent.BlurMaster.size*pow(a,b)*4} {parent.BlurMaster.size*pow(a,b)*4}}
@@ -760,7 +760,7 @@ push $N74060000
    ypos 175
    disable {{"sample < 3"}}
   }
-push $N74060000
+push $N88bb2000
   Blur {
    channels rgba
    size {{parent.BlurMaster.size*pow(a,b)*2} {parent.BlurMaster.size*pow(a,b)*2}}
@@ -772,7 +772,7 @@ push $N74060000
    disable {{"sample < 2"}}
   }
 push 0
-push $N74060000
+push $N88bb2000
   Blur {
    channels rgba
    size {{parent.size} {parent.BlurMaster.size.w*anamorph}}
@@ -782,7 +782,7 @@ push $N74060000
    ypos 186
    disable {{"sample == 0"}}
   }
-push $N74060000
+push $N88bb2000
   Merge2 {
    inputs 12+1
    operation plus
@@ -805,7 +805,7 @@ push $N74060000
    xpos 106
    ypos 290
   }
-push $N74012800
+push $N88b64800
   Remove {
    channels rgba
    name Remove1
@@ -833,9 +833,9 @@ push $N74012800
    ypos 374
   }
  end_group
-set N9337c700 [stack 0]
-push $N73f3ed00
-push $N73ed4800
+set Nab0ac700 [stack 0]
+push $N883d0d00
+push $N88364800
  Grade {
   channels rgba
   white {{parent.opacity_1}}
@@ -849,9 +849,9 @@ push $N73ed4800
   xpos -537
   ypos 691
  }
-push $N73ff6800
-push $N73f67200
-push $N73f94800
+push $N88b4e800
+push $N883f9200
+push $N88ae6800
  Switch {
   inputs 2
   which {{parent.mode}}
@@ -877,7 +877,7 @@ push $N73f94800
   xpos -222
   ypos 999
  }
-push $N9337c700
+push $Nab0ac700
  Switch {
   inputs 6
   which {{parent.preview}}
